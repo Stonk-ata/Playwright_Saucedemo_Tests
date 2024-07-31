@@ -144,3 +144,37 @@ test('unable_to_input_lastname', async ({ page }) => {
   await page.locator('[data-test="continue"]').click();
   await expect(page.locator('[data-test="error"]')).toContainText('Error: Last Name is required');
 });
+
+test('if_sorted_low_to_high', async({page}) =>{
+  await page.goto('https://www.saucedemo.com/');
+  await page.locator('[data-test="username"]').click();
+  await page.locator('[data-test="username"]').fill('standard_user');
+  await page.locator('[data-test="password"]').click();
+  await page.locator('[data-test="password"]').fill('secret_sauce');
+  await page.locator('[data-test="login-button"]').click();
+  await page.locator('[data-test = "product-sort-container"]').selectOption('Price (low to high)');
+  let list = await page.locator('[data-test="inventory-item-price"]').allTextContents();
+  list = floatify(list);
+  console.log(checkIfSorted(list));
+})
+
+function floatify(list)
+{
+  for(let i = 0; i <list.length; i++)
+  {
+    list[i] = parseFloat(list[i].slice(1));
+  }
+  return list;
+}
+
+function checkIfSorted(list)
+{
+  for(let i = 0; i < list.length - 1 ; i++)
+  {
+    if(list[i] > list[i + 1])
+    {
+      return false;
+    }
+  }
+  return true;
+}
